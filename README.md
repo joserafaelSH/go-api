@@ -4,7 +4,7 @@
 
 - CRUD operations
 - Authentication
-- A:uthorization
+- Authorization
 - Database integration
 - Test coverage
 - Observability

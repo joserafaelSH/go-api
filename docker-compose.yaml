@@ -14,6 +14,7 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     environment:
+      GO_ENV: "${GO_ENV}"
       PORT: "${PORT}"
       OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT}"
       JAEGER_TRACEPROVIDER: "${JAEGER_TRACEPROVIDER}"
@@ -23,6 +24,7 @@ services:
     depends_on:
       - otelcol
 
+  # Jaeger
   jaeger:
     image: jaegertracing/all-in-one
     container_name: jaeger
@@ -48,6 +50,7 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
       - METRICS_STORAGE_TYPE=prometheus
     logging: *logging
+
   # Grafana
   grafana:
     image: grafana/grafana:9.1.0
@@ -73,8 +76,8 @@ services:
         "--config=/etc/otelcol-config-extras.yml",
       ]
     volumes:
-      - ./otelcol-config.yml:/etc/otelcol-config.yml
-      - ./otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
+      - ./ops/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
+      - ./ops/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
     ports:
       - "4317" # OTLP over gRPC receiver
       - "4318:4318" # OTLP over HTTP receiver
@@ -98,7 +101,7 @@ services:
       - --web.route-prefix=/
       - --enable-feature=exemplar-storage
     volumes:
-      - ./prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
+      - ./ops/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
     deploy:
       resources:
         limits:
